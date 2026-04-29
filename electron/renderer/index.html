@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'">
+  <title>Agent Migrate</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Header with logo and title -->
+  <header class="app-header">
+    <svg class="logo-icon" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:1" />
+        </linearGradient>
+      </defs>
+      <rect x="0" y="0" width="512" height="512" rx="100" ry="100" fill="#0f172a"/>
+      <g fill="none" stroke="url(#grad)" stroke-width="28" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M100 180 Q256 120 412 332"/>
+        <polyline points="370,310 412,332 390,370"/>
+        <path d="M412 180 Q256 392 100 332"/>
+        <polyline points="142,354 100,332 122,292"/>
+      </g>
+    </svg>
+    <h1>Agent Migrate</h1>
+  </header>
+
+  <!-- Tab Navigation -->
+  <nav class="tab-nav">
+    <button class="tab-btn active" data-tab="status">状态</button>
+    <button class="tab-btn" data-tab="export">导出</button>
+    <button class="tab-btn" data-tab="import">导入</button>
+  </nav>
+
+  <!-- Tab Content -->
+  <main class="tab-content">
+
+    <!-- Status Tab -->
+    <section id="tab-status" class="tab-pane active">
+      <button id="btn-refresh" class="btn btn-primary">刷新状态</button>
+
+      <div class="card">
+        <h3>系统信息</h3>
+        <div class="info-row"><span>平台</span><span id="sys-platform">-</span></div>
+        <div class="info-row"><span>架构</span><span id="sys-arch">-</span></div>
+        <div class="info-row"><span>主目录</span><span id="sys-home">-</span></div>
+      </div>
+
+      <div class="card">
+        <h3>依赖</h3>
+        <div class="info-row"><span>Node.js</span><span id="dep-node">-</span></div>
+        <div class="info-row"><span>npm</span><span id="dep-npm">-</span></div>
+        <div class="info-row"><span>Python</span><span id="dep-python">-</span></div>
+      </div>
+
+      <div class="card">
+        <h3>框架</h3>
+        <div class="info-row"><span>OpenClaw</span><span id="fw-openclaw">-</span></div>
+        <div class="info-row"><span>Hermes Agent</span><span id="fw-hermes">-</span></div>
+      </div>
+    </section>
+
+    <!-- Export Tab -->
+    <section id="tab-export" class="tab-pane">
+      <div class="card">
+        <h3>选择框架</h3>
+        <label class="checkbox"><input type="checkbox" id="exp-fw-openclaw" checked> OpenClaw</label>
+        <label class="checkbox"><input type="checkbox" id="exp-fw-hermes" checked> Hermes Agent</label>
+      </div>
+
+      <div class="card">
+        <h3>输出文件</h3>
+        <div class="file-picker">
+          <input type="text" id="exp-output-path" readonly placeholder="选择输出路径...">
+          <button id="btn-exp-pick" class="btn btn-secondary">浏览</button>
+        </div>
+      </div>
+
+      <button id="btn-export" class="btn btn-primary">导出</button>
+
+      <div class="log-area" id="exp-log">
+        <div class="log-placeholder">导出日志将显示在这里...</div>
+      </div>
+    </section>
+
+    <!-- Import Tab -->
+    <section id="tab-import" class="tab-pane">
+      <div class="card">
+        <h3>迁移文件</h3>
+        <div class="file-picker">
+          <input type="text" id="imp-file-path" readonly placeholder="选择迁移文件...">
+          <button id="btn-imp-pick" class="btn btn-secondary">浏览</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>选项</h3>
+        <label class="checkbox"><input type="checkbox" id="imp-force"> 覆盖现有配置</label>
+        <label class="checkbox"><input type="checkbox" id="imp-auto-install"> 缺失时自动安装框架</label>
+      </div>
+
+      <div class="card">
+        <h3>选择框架</h3>
+        <label class="checkbox"><input type="checkbox" id="imp-fw-openclaw" checked> OpenClaw</label>
+        <label class="checkbox"><input type="checkbox" id="imp-fw-hermes" checked> Hermes Agent</label>
+      </div>
+
+      <button id="btn-import" class="btn btn-primary">导入</button>
+
+      <div class="log-area" id="imp-log">
+        <div class="log-placeholder">导入日志将显示在这里...</div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="app-footer">
+    <span id="footer-version">Agent Migrate v1.0.0</span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
