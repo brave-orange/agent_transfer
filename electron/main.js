@@ -13,7 +13,7 @@ function createWindow() {
     minWidth: 500,
     minHeight: 600,
     title: 'Agent Migrate',
-    icon: path.join(__dirname, '..', 'logo.png'),
+    icon: path.join(__dirname, '..', 'assets', 'logos', 'logo.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,

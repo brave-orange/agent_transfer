@@ -7,31 +7,31 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.join(__dirname, '..');
-const SVG_PATH = path.join(ROOT, 'logo.svg');
+const SVG_PATH = path.join(ROOT, 'assets', 'logos', 'logo.svg');
 
 async function generateIcons() {
   // Generate 512x512 PNG (required for all platforms)
-  const pngPath = path.join(ROOT, 'logo.png');
+  const pngPath = path.join(ROOT, 'assets', 'logos', 'logo.png');
   await sharp(SVG_PATH)
     .resize(512, 512)
     .png()
     .toFile(pngPath);
-  console.log('Created: logo.png (512x512)');
+  console.log('Created: assets/logos/logo.png (512x512)');
 
   // Generate 256x256 PNG for macOS
-  const png256Path = path.join(ROOT, 'logo-256.png');
+  const png256Path = path.join(ROOT, 'assets', 'logos', 'logo-256.png');
   await sharp(SVG_PATH)
     .resize(256, 256)
     .png()
     .toFile(png256Path);
-  console.log('Created: logo-256.png (256x256)');
+  console.log('Created: assets/logos/logo-256.png (256x256)');
 
   // Generate ICO for Windows (multi-size: 16, 32, 48, 256)
-  const icoPath = path.join(ROOT, 'logo.ico');
+  const icoPath = path.join(ROOT, 'assets', 'logos', 'logo.ico');
   await sharp(SVG_PATH)
     .resize(256, 256)
     .png()
-    .toFile(path.join(ROOT, 'logo-256-for-ico.png'));
+    .toFile(path.join(ROOT, 'assets', 'logos', 'logo-256-for-ico.png'));
 
   // sharp can create .ico files
   const sizes = [16, 32, 48, 256];
@@ -67,14 +67,14 @@ async function generateIcons() {
 
   const icoFile = Buffer.concat([header, directory, iconData]);
   fs.writeFileSync(icoPath, icoFile);
-  console.log('Created: logo.ico (multi-size ICO)');
+  console.log('Created: assets/logos/logo.ico (multi-size ICO)');
 
   // Clean up temp files
   try { fs.unlinkSync(png256Path); } catch {}
-  try { fs.unlinkSync(path.join(ROOT, 'logo-256-for-ico.png')); } catch {}
+  try { fs.unlinkSync(path.join(ROOT, 'assets', 'logos', 'logo-256-for-ico.png')); } catch {}
 
   console.log('\nIcon generation complete!');
-  console.log('Files: logo.png, logo.ico');
+  console.log('Files: assets/logos/logo.png, assets/logos/logo.ico');
 }
 
 generateIcons().catch(err => {

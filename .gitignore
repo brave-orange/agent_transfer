@@ -9,9 +9,12 @@ coverage/
 .claude/
 *.log
 
-# Generated icons (built from logo.svg)
-logo.png
-logo.ico
+# Generated icons (built from assets/logos/logo.svg)
+assets/logos/logo.png
+assets/logos/logo.ico
+assets/logos/logo.icns
+assets/logos/logo-256.png
+assets/logos/logo-256-for-ico.png
 
 # Build outputs
 *.exe

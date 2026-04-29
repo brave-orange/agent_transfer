@@ -42,20 +42,21 @@
     "files": [
       "electron/**/*",
       "src/**/*",
+      "assets/**/*",
       "node_modules/**/*",
       "package.json"
     ],
     "win": {
       "target": "nsis",
-      "icon": "logo.ico"
+      "icon": "assets/logos/logo.ico"
     },
     "mac": {
       "target": "dmg",
-      "icon": "logo.icns"
+      "icon": "assets/logos/logo.icns"
     },
     "linux": {
       "target": "AppImage",
-      "icon": "logo.png"
+      "icon": "assets/logos/logo.png"
     }
   }
 }
