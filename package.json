@@ -28,6 +28,7 @@
   "devDependencies": {
     "electron": "^33.0.0",
     "electron-builder": "^25.0.0",
+    "electron-packager": "^17.1.2",
     "esbuild": "^0.25.0",
     "pkg": "^5.8.1",
     "sharp": "^0.34.5"
