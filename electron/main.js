@@ -79,7 +79,7 @@ ipcMain.handle('file:pick-import', async () => {
 ipcMain.on('action:export', (event, options) => {
   const { outputPath, frameworks } = options;
   const srcPath = path.join(__dirname, '..', 'src', 'index.js');
-  const args = ['export'];
+  const args = [srcPath, 'export'];
 
   // Always use explicit framework flags to respect user selection
   if (frameworks.openclaw) args.push('--openclaw');
@@ -105,7 +105,7 @@ ipcMain.on('action:export', (event, options) => {
 ipcMain.on('action:import', (event, options) => {
   const { filePath, force, autoInstall, frameworks } = options;
   const srcPath = path.join(__dirname, '..', 'src', 'index.js');
-  const args = ['import', filePath];
+  const args = [srcPath, 'import', filePath];
 
   if (force) args.push('--force');
   if (autoInstall) args.push('--auto-install');
