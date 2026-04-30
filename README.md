@@ -1,7 +1,7 @@
 # Agent Migrate
 
 <p align="center">
-  <img src="logo-128.png" alt="Agent Migrate Logo" width="128" height="128"/>
+  <img src="assets/logos/logo-text-640.png" alt="Agent Migrate Logo" width="400"/>
 </p>
 
 <p align="center">
@@ -140,8 +140,9 @@ agent-migrate/
 ├── tests/
 │   └── test.js              # 集成测试（导出/导入/还原）
 ├── dist/                    # 打包输出
-├── logo.svg                 # Logo 源文件
-└── package.json
+├── assets/                  # Logo 资源
+│   └── logos/               # 多尺寸 Logo（png, svg, ico）
+├── package.json
 ```
 
 ## Migration File Format

@@ -29,6 +29,7 @@ Export Options:
   --openclaw                Include OpenClaw config
   --hermes                  Include Hermes Agent config
   --all                     Include all detected frameworks (default)
+  --path <dir>              Manually specify framework config directory
 
 Import Options:
   --force                   Overwrite existing configurations
@@ -36,6 +37,7 @@ Import Options:
   --openclaw                Import only OpenClaw config
   --hermes                  Import only Hermes Agent config
   --all                     Import all detected frameworks (default)
+  --path <dir>              Manually specify framework config directory
 
 Examples:
   node src/index.js status
@@ -92,22 +94,24 @@ async function exportCmd(options) {
   let exportedFrameworks = [];
 
   if (includeOpenclaw) {
-    if (!fw.openclaw.installed) {
+    if (!fw.openclaw.installed && !options.customPath) {
       console.warn('Warning: OpenClaw not detected on this system, skipping.');
+      console.warn('Use --path <dir> to manually specify the config directory.');
     } else {
       console.log('Exporting OpenClaw configuration...');
-      exportOpenClaw(stagingDir);
+      exportOpenClaw(stagingDir, options.customPath);
       exportedFrameworks.push('openclaw');
       console.log('  OpenClaw: OK');
     }
   }
 
   if (includeHermes) {
-    if (!fw.hermes.installed) {
+    if (!fw.hermes.installed && !options.customPath) {
       console.warn('Warning: Hermes Agent not detected on this system, skipping.');
+      console.warn('Use --path <dir> to manually specify the config directory.');
     } else {
       console.log('Exporting Hermes Agent configuration...');
-      exportHermes(stagingDir);
+      exportHermes(stagingDir, options.customPath);
       exportedFrameworks.push('hermes');
       console.log('  Hermes Agent: OK');
     }
@@ -238,7 +242,7 @@ async function importCmd(archivePath, options) {
   console.log(`\nImporting configurations...`);
 
   if (targetFrameworks.includes('openclaw')) {
-    const result = importOpenClaw(extractDir);
+    const result = importOpenClaw(extractDir, options.customPath);
     if (result.imported) {
       console.log(`  OpenClaw: Imported (${result.items.join(', ')})`);
     } else {
@@ -247,7 +251,7 @@ async function importCmd(archivePath, options) {
   }
 
   if (targetFrameworks.includes('hermes')) {
-    const result = importHermes(extractDir);
+    const result = importHermes(extractDir, options.customPath);
     if (result.imported) {
       console.log(`  Hermes Agent: Imported (${result.items.join(', ')})`);
     } else {
@@ -350,6 +354,9 @@ function parseArgs(args) {
         break;
       case '--auto-install':
         options.autoInstall = true;
+        break;
+      case '--path':
+        options.customPath = args[++i];
         break;
       default:
         // If it looks like a file path (for export output)

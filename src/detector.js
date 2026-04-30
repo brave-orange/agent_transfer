@@ -3,9 +3,6 @@ const path = require('path');
 const { execSync } = require('child_process');
 const { getPlatform, getHomeDir } = require('./platform');
 
-/**
- * Check if a command exists on the system.
- */
 function commandExists(cmd) {
   try {
     const platform = getPlatform();
@@ -19,9 +16,6 @@ function commandExists(cmd) {
   }
 }
 
-/**
- * Run a command and return output.
- */
 function runCmd(cmd, options = {}) {
   try {
     const output = execSync(cmd, {
@@ -35,27 +29,18 @@ function runCmd(cmd, options = {}) {
   }
 }
 
-/**
- * Check if Node.js is installed and get version.
- */
 function checkNodeJS() {
   const result = runCmd('node --version');
   if (!result.success) return { installed: false, version: null };
   return { installed: true, version: result.output };
 }
 
-/**
- * Check if npm is installed.
- */
 function checkNPM() {
   const result = runCmd('npm --version');
   if (!result.success) return { installed: false, version: null };
   return { installed: true, version: result.output };
 }
 
-/**
- * Check if Python is installed (needed for some agent setups).
- */
 function checkPython() {
   const pythonResult = runCmd('python --version');
   if (pythonResult.success) return { installed: true, version: pythonResult.output, command: 'python' };
@@ -66,60 +51,133 @@ function checkPython() {
   return { installed: false, version: null, command: null };
 }
 
-/**
- * Detect installed frameworks and their status.
- */
-function detectFrameworks() {
+function detectFrameworks(overrides) {
   const home = getHomeDir();
-  const platform = getPlatform();
-  const result = { openclaw: { installed: false, path: null, version: null, configDir: null }, hermes: { installed: false, path: null, version: null, configDir: null } };
+  const result = {
+    openclaw: { installed: false, path: null, version: null, configDir: null },
+    hermes: { installed: false, path: null, version: null, configDir: null },
+  };
 
   // --- OpenClaw Detection ---
-  // Method 1: Check CLI command
-  if (commandExists('openclaw')) {
-    result.openclaw.installed = true;
-    result.openclaw.path = runCmd('openclaw --version').output || null;
-  }
+  if (overrides?.openclaw?.path) {
+    const r = detectFromPath('openclaw', overrides.openclaw.path);
+    Object.assign(result.openclaw, r);
+  } else {
+    if (commandExists('openclaw')) {
+      result.openclaw.installed = true;
+      result.openclaw.path = runCmd('openclaw --version').output || null;
+    }
 
-  // Method 2: Check config directory
-  const openclawConfigDir = path.join(home, '.openclaw');
-  if (fs.existsSync(openclawConfigDir)) {
-    result.openclaw.installed = true;
-    result.openclaw.configDir = openclawConfigDir;
-  }
+    const openclawConfigDir = path.join(home, '.openclaw');
+    if (fs.existsSync(openclawConfigDir)) {
+      result.openclaw.installed = true;
+      result.openclaw.configDir = openclawConfigDir;
+    }
 
-  // Method 3: Check workspace
-  const openclawWorkspace = path.join(home, 'openclaw', 'workspace');
-  if (fs.existsSync(openclawWorkspace)) {
-    result.openclaw.installed = true;
+    const openclawWorkspace = path.join(home, 'openclaw', 'workspace');
+    if (fs.existsSync(openclawWorkspace)) {
+      result.openclaw.installed = true;
+    }
   }
 
   // --- Hermes Agent Detection ---
-  // Method 1: Check CLI command
-  if (commandExists('hermes')) {
-    result.hermes.installed = true;
-    result.hermes.path = runCmd('hermes --version').output || null;
-  }
+  if (overrides?.hermes?.path) {
+    const r = detectFromPath('hermes', overrides.hermes.path);
+    Object.assign(result.hermes, r);
+  } else {
+    if (commandExists('hermes')) {
+      result.hermes.installed = true;
+      result.hermes.path = runCmd('hermes --version').output || null;
+    }
 
-  // Method 2: Check config directory
-  const hermesConfigDir = path.join(home, '.hermes');
-  if (fs.existsSync(hermesConfigDir)) {
-    result.hermes.installed = true;
-    result.hermes.configDir = hermesConfigDir;
-  }
+    const hermesConfigDir = path.join(home, '.hermes');
+    if (fs.existsSync(hermesConfigDir)) {
+      result.hermes.installed = true;
+      result.hermes.configDir = hermesConfigDir;
+    }
 
-  // Method 3: Check workspace
-  const hermesWorkspace = path.join(home, 'hermes', 'workspace');
-  if (fs.existsSync(hermesWorkspace)) {
-    result.hermes.installed = true;
+    const hermesWorkspace = path.join(home, 'hermes', 'workspace');
+    if (fs.existsSync(hermesWorkspace)) {
+      result.hermes.installed = true;
+    }
   }
 
   return result;
 }
 
 /**
- * Validate system readiness for agent operation.
+ * Detect framework from a user-specified path.
  */
+function detectFromPath(framework, customPath) {
+  if (!customPath || !fs.existsSync(customPath)) {
+    return { installed: false, path: null, version: null, configDir: null };
+  }
+
+  const stat = fs.statSync(customPath);
+  if (!stat.isDirectory()) return { installed: false, path: null, version: null, configDir: null };
+
+  const result = { installed: false, path: null, version: null, configDir: customPath };
+
+  if (framework === 'openclaw') {
+    // Check for OpenClaw markers
+    const markers = ['openclaw.json', '.env', 'sessions', 'memory', 'skills'];
+    for (const marker of markers) {
+      if (fs.existsSync(path.join(customPath, marker))) {
+        result.installed = true;
+        break;
+      }
+    }
+    // Also check if the path itself is a workspace dir
+    if (path.basename(customPath).toLowerCase() === 'workspace') {
+      const parentConfig = path.join(path.dirname(customPath), '.openclaw', 'openclaw.json');
+      if (fs.existsSync(parentConfig)) {
+        result.installed = true;
+        result.configDir = path.dirname(customPath);
+      }
+    }
+  } else if (framework === 'hermes') {
+    const markers = ['config.yaml', '.env', 'SOUL.md', 'MEMORY.md', 'USER.md', 'sessions', 'memory'];
+    for (const marker of markers) {
+      if (fs.existsSync(path.join(customPath, marker))) {
+        result.installed = true;
+        break;
+      }
+    }
+    if (path.basename(customPath).toLowerCase() === 'workspace') {
+      const parentConfig = path.join(path.dirname(customPath), '.hermes', 'config.yaml');
+      if (fs.existsSync(parentConfig)) {
+        result.installed = true;
+        result.configDir = path.dirname(customPath);
+      }
+    }
+  }
+
+  result.path = customPath;
+  return result;
+}
+
+/**
+ * Validate if a given path looks like a framework installation.
+ */
+function isValidFrameworkPath(framework, customPath) {
+  if (!customPath || !fs.existsSync(customPath)) return false;
+
+  const stat = fs.statSync(customPath);
+  if (!stat.isDirectory()) return false;
+
+  if (framework === 'openclaw') {
+    return fs.existsSync(path.join(customPath, 'openclaw.json')) ||
+      fs.existsSync(path.join(customPath, '.env'));
+  }
+
+  if (framework === 'hermes') {
+    return fs.existsSync(path.join(customPath, 'config.yaml')) ||
+      fs.existsSync(path.join(customPath, '.env'));
+  }
+
+  return false;
+}
+
 function validateSystem() {
   const platform = getPlatform();
   const nodeCheck = checkNodeJS();
@@ -138,4 +196,4 @@ function validateSystem() {
   };
 }
 
-module.exports = { commandExists, runCmd, checkNodeJS, checkNPM, checkPython, detectFrameworks, validateSystem };
+module.exports = { commandExists, runCmd, checkNodeJS, checkNPM, checkPython, detectFrameworks, detectFromPath, isValidFrameworkPath, validateSystem };

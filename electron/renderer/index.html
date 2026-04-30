@@ -72,6 +72,20 @@
       </div>
 
       <div class="card">
+        <h3>自定义路径（未检测到框架时指定）</h3>
+        <div class="path-picker">
+          <span>OpenClaw:</span>
+          <input type="text" id="exp-path-openclaw" readonly placeholder="自动检测...">
+          <button id="btn-exp-path-openclaw" class="btn btn-secondary">浏览</button>
+        </div>
+        <div class="path-picker">
+          <span>Hermes:</span>
+          <input type="text" id="exp-path-hermes" readonly placeholder="自动检测...">
+          <button id="btn-exp-path-hermes" class="btn btn-secondary">浏览</button>
+        </div>
+      </div>
+
+      <div class="card">
         <h3>输出文件</h3>
         <div class="file-picker">
           <input type="text" id="exp-output-path" readonly placeholder="选择输出路径...">
@@ -106,6 +120,20 @@
         <h3>选择框架</h3>
         <label class="checkbox"><input type="checkbox" id="imp-fw-openclaw" checked> OpenClaw</label>
         <label class="checkbox"><input type="checkbox" id="imp-fw-hermes" checked> Hermes Agent</label>
+      </div>
+
+      <div class="card">
+        <h3>自定义路径（导入到指定位置）</h3>
+        <div class="path-picker">
+          <span>OpenClaw:</span>
+          <input type="text" id="imp-path-openclaw" readonly placeholder="默认路径">
+          <button id="btn-imp-path-openclaw" class="btn btn-secondary">浏览</button>
+        </div>
+        <div class="path-picker">
+          <span>Hermes:</span>
+          <input type="text" id="imp-path-hermes" readonly placeholder="默认路径">
+          <button id="btn-imp-path-hermes" class="btn btn-secondary">浏览</button>
+        </div>
       </div>
 
       <button id="btn-import" class="btn btn-primary">导入</button>

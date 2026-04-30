@@ -75,16 +75,26 @@ ipcMain.handle('file:pick-import', async () => {
   return result.filePaths[0];
 });
 
+ipcMain.handle('file:pick-directory', async (event, { title }) => {
+  const result = await dialog.showOpenDialog(mainWindow, {
+    title: title || '选择目录',
+    properties: ['openDirectory'],
+  });
+  if (result.canceled || result.filePaths.length === 0) return null;
+  return result.filePaths[0];
+});
+
 // --- IPC: Export (spawn child process) ---
 ipcMain.on('action:export', (event, options) => {
-  const { outputPath, frameworks } = options;
+  const { outputPath, frameworks, openclawPath, hermesPath } = options;
   const srcPath = path.join(__dirname, '..', 'src', 'index.js');
   const args = [srcPath, 'export'];
 
-  // Always use explicit framework flags to respect user selection
   if (frameworks.openclaw) args.push('--openclaw');
   if (frameworks.hermes) args.push('--hermes');
   if (outputPath) args.push('--output', outputPath);
+  if (openclawPath) args.push('--path', openclawPath);
+  if (hermesPath) args.push('--path', hermesPath);
 
   const child = spawn('node', args, { cwd: path.join(__dirname, '..') });
 
@@ -103,15 +113,16 @@ ipcMain.on('action:export', (event, options) => {
 
 // --- IPC: Import (spawn child process) ---
 ipcMain.on('action:import', (event, options) => {
-  const { filePath, force, autoInstall, frameworks } = options;
+  const { filePath, force, autoInstall, frameworks, openclawPath, hermesPath } = options;
   const srcPath = path.join(__dirname, '..', 'src', 'index.js');
   const args = [srcPath, 'import', filePath];
 
   if (force) args.push('--force');
   if (autoInstall) args.push('--auto-install');
-  // Always use explicit framework flags
   if (frameworks.openclaw) args.push('--openclaw');
   if (frameworks.hermes) args.push('--hermes');
+  if (openclawPath) args.push('--path', openclawPath);
+  if (hermesPath) args.push('--path', hermesPath);
 
   const child = spawn('node', args, { cwd: path.join(__dirname, '..') });
 

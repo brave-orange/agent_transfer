@@ -86,6 +86,12 @@ function markSuccess(logEl) {
   logEl.scrollTop = logEl.scrollHeight;
 }
 
+// --- Directory picker helper ---
+async function pickDirectory(title) {
+  const dir = await window.electronAPI.invoke('file:pick-directory', { title });
+  return dir;
+}
+
 // --- Export Tab ---
 const $expOutput = document.getElementById('exp-output-path');
 const $btnExpPick = document.getElementById('btn-exp-pick');
@@ -93,6 +99,20 @@ const $btnExport = document.getElementById('btn-export');
 const $expLog = document.getElementById('exp-log');
 const $expFwOpenclaw = document.getElementById('exp-fw-openclaw');
 const $expFwHermes = document.getElementById('exp-fw-hermes');
+const $expPathOpenclaw = document.getElementById('exp-path-openclaw');
+const $expPathHermes = document.getElementById('exp-path-hermes');
+const $btnExpPathOpenclaw = document.getElementById('btn-exp-path-openclaw');
+const $btnExpPathHermes = document.getElementById('btn-exp-path-hermes');
+
+$btnExpPathOpenclaw.addEventListener('click', async () => {
+  const dir = await pickDirectory('选择 OpenClaw 配置目录');
+  if (dir) $expPathOpenclaw.value = dir;
+});
+
+$btnExpPathHermes.addEventListener('click', async () => {
+  const dir = await pickDirectory('选择 Hermes Agent 配置目录');
+  if (dir) $expPathHermes.value = dir;
+});
 
 $btnExpPick.addEventListener('click', async () => {
   const filePath = await window.electronAPI.invoke('file:pick-export');
@@ -101,6 +121,8 @@ $btnExpPick.addEventListener('click', async () => {
 
 $btnExport.addEventListener('click', () => {
   const outputPath = $expOutput.value || null;
+  const openclawPath = $expPathOpenclaw.value || null;
+  const hermesPath = $expPathHermes.value || null;
   const frameworks = {
     openclaw: $expFwOpenclaw.checked,
     hermes: $expFwHermes.checked,
@@ -132,6 +154,8 @@ $btnExport.addEventListener('click', () => {
   window.electronAPI.send('action:export', {
     outputPath,
     frameworks,
+    openclawPath,
+    hermesPath,
   });
 });
 
@@ -144,6 +168,20 @@ const $impForce = document.getElementById('imp-force');
 const $impAutoInstall = document.getElementById('imp-auto-install');
 const $impFwOpenclaw = document.getElementById('imp-fw-openclaw');
 const $impFwHermes = document.getElementById('imp-fw-hermes');
+const $impPathOpenclaw = document.getElementById('imp-path-openclaw');
+const $impPathHermes = document.getElementById('imp-path-hermes');
+const $btnImpPathOpenclaw = document.getElementById('btn-imp-path-openclaw');
+const $btnImpPathHermes = document.getElementById('btn-imp-path-hermes');
+
+$btnImpPathOpenclaw.addEventListener('click', async () => {
+  const dir = await pickDirectory('选择 OpenClaw 导入目录');
+  if (dir) $impPathOpenclaw.value = dir;
+});
+
+$btnImpPathHermes.addEventListener('click', async () => {
+  const dir = await pickDirectory('选择 Hermes Agent 导入目录');
+  if (dir) $impPathHermes.value = dir;
+});
 
 $btnImpPick.addEventListener('click', async () => {
   const filePath = await window.electronAPI.invoke('file:pick-import');
@@ -157,6 +195,8 @@ $btnImport.addEventListener('click', () => {
     return;
   }
 
+  const openclawPath = $impPathOpenclaw.value || null;
+  const hermesPath = $impPathHermes.value || null;
   const frameworks = {
     openclaw: $impFwOpenclaw.checked,
     hermes: $impFwHermes.checked,
@@ -190,6 +230,8 @@ $btnImport.addEventListener('click', () => {
     force: $impForce.checked,
     autoInstall: $impAutoInstall.checked,
     frameworks,
+    openclawPath,
+    hermesPath,
   });
 });
 

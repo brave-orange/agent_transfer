@@ -158,6 +158,36 @@ body {
 
 .btn-secondary:hover { border-color: var(--accent); }
 
+/* Path Picker */
+.path-picker {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.path-picker:last-child { margin-bottom: 0; }
+
+.path-picker span {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  white-space: nowrap;
+  min-width: 70px;
+}
+
+.path-picker input {
+  flex: 1;
+  padding: 10px 12px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.path-picker input:focus { border-color: var(--accent); }
+
 /* File Picker */
 .file-picker {
   display: flex;
